@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RailQuote | ระบบคำนวณค่าเช่าตู้รถไฟ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1020; --panel:#111a2e; --panel2:#17233b; --line:#23334f;
+  --txt:#e9eefb; --mut:#96a8cc; --gold:#f0b429; --gold2:#ffd45e;
+  --grn:#2dd4a7; --red:#ff6b6b; --blue:#4c8dff; --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.65}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+/* ---------- NAV ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(10,16,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:8px;height:64px}
+.logo{font-weight:700;font-size:19px;display:flex;align-items:center;gap:8px;margin-right:auto}
+.logo span{color:var(--gold)}
+.nav a.lk{padding:8px 13px;border-radius:9px;color:var(--mut);font-size:14.5px;font-weight:500}
+.nav a.lk:hover,.nav a.lk.on{color:var(--txt);background:var(--panel2)}
+.burger{display:none;background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 12px;border-radius:9px;cursor:pointer}
+/* ---------- BUTTONS ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:11px;border:1px solid transparent;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:.18s}
+.btn-g{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c00}
+.btn-g:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-o{background:transparent;border-color:var(--line);color:var(--txt)}
+.btn-o:hover{background:var(--panel2);border-color:var(--gold)}
+.btn-d{background:#3a1620;border:1px solid #6b2230;color:var(--red)}
+.btn-s{padding:7px 13px;font-size:13.5px;border-radius:9px}
+/* ---------- HERO ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(1000px 460px at 82% -10%,rgba(240,180,41,.20),transparent 62%),
+             radial-gradient(760px 420px at 8% 110%,rgba(76,141,255,.18),transparent 60%),#0a1020}
+.hero-in{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:62px 0 70px}
+.tagpill{display:inline-flex;align-items:center;gap:7px;background:rgba(240,180,41,.12);border:1px solid rgba(240,180,41,.35);color:var(--gold2);padding:6px 13px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:16px}
+.hero h1{font-size:42px;line-height:1.28;font-weight:700;letter-spacing:-.5px}
+.hero h1 em{font-style:normal;color:var(--gold);}
+.hero p{color:var(--mut);margin:16px 0 26px;font-size:16.5px;max-width:540px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.train-art{background:linear-gradient(160deg,#1b2942,#0e1728);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.train-art .win{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}
+.train-art .win i{height:44px;border-radius:7px;background:linear-gradient(180deg,#2b4370,#16233c);border:1px solid #31466e;display:block}
+.rail{height:6px;background:repeating-linear-gradient(90deg,#2a3a5c 0 16px,transparent 16px 26px);border-radius:4px;margin-top:16px}
+/* ---------- FEATURES ---------- */
+.feat{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:-36px 0 0;position:relative;z-index:2}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.fcard b{display:block;font-size:15px;margin:8px 0 3px}
+.fcard small{color:var(--mut);font-size:13px}
+.ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:19px;background:var(--panel2);border:1px solid var(--line)}
+/* ---------- SECTION ---------- */
+section{padding:56px 0}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.sec-h h2{font-size:27px;font-weight:700}
+.sec-h p{color:var(--mut);font-size:14.5px;margin-top:4px}
+/* ---------- CARDS ---------- */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+.card:hover{border-color:rgba(240,180,41,.5);transform:translateY(-3px);box-shadow:0 16px 38px rgba(0,0,0,.4)}
+.thumb{height:172px;background:linear-gradient(135deg,#22355a,#131f36);display:grid;place-items:center;font-size:46px;position:relative;overflow:hidden}
+.thumb img{height:100%;width:100%;object-fit:cover}
+.badge{position:absolute;top:11px;left:11px;background:rgba(10,16,32,.82);border:1px solid var(--line);color:var(--gold2);font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.card-b{padding:16px;display:flex;flex-direction:column;gap:11px;flex:1}
+.card-b h3{font-size:17.5px;font-weight:700}
+.cap{display:flex;gap:14px;flex-wrap:wrap;color:var(--mut);font-size:13.5px}
+.cap i{font-style:normal}
+.fx{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--mut);font-size:12px;padding:4px 9px;border-radius:8px}
+.price{margin-top:auto;padding-top:11px;border-top:1px dashed var(--line);display:flex;align-items:baseline;gap:6px}
+.price b{color:var(--gold);font-size:21px}
+.price small{color:var(--mut);font-size:12.5px}
+.card-act{display:flex;gap:8px}
+.card-act .btn{flex:1}
+/* ---------- FORM ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.frow{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.fg{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;position:relative}
+label{font-size:13.5px;font-weight:600;color:var(--mut)}
+input,select,textarea{font-family:inherit;font-size:15px;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;width:100%;outline:none;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,180,41,.14)}
+select option{background:#17233b}
+.drop{position:absolute;top:100%;left:0;right:0;z-index:30;background:#17233b;border:1px solid var(--line);border-radius:11px;margin-top:5px;max-height:240px;overflow:auto;box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.drop div{padding:10px 13px;cursor:pointer;font-size:14.5px;display:flex;justify-content:space-between;gap:10px}
+.drop div:hover{background:#22335a}
+.drop div small{color:var(--mut)}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.radio{display:flex;gap:11px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);cursor:pointer;transition:.15s}
+.radio:hover{border-color:#3a527e}
+.radio.on{border-color:var(--gold);background:rgba(240,180,41,.09)}
+.radio b{font-size:14.5px;display:block}
+.radio small{color:var(--mut);font-size:12.5px}
+.cks{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.ck{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--mut);background:var(--panel2);border:1px solid var(--line);padding:9px 11px;border-radius:10px;cursor:pointer}
+.ck input{width:auto}
+/* ---------- RESULT ---------- */
+.bill{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.bill-h{padding:20px 22px;background:linear-gradient(135deg,#1b2942,#111a2e);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.route{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700;flex-wrap:wrap}
+.route .ar{color:var(--gold)}
+table.bt{width:100%;border-collapse:collapse;font-size:14.5px}
+table.bt th,table.bt td{padding:12px 22px;border-bottom:1px solid var(--line);text-align:left}
+table.bt th{color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:.6px;background:var(--panel2)}
+table.bt td.n{text-align:right;font-variant-numeric:tabular-nums}
+table.bt tr.sum td{font-weight:700;font-size:19px;color:var(--gold);background:rgba(240,180,41,.07);border-bottom:none}
+.note{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);color:#ffc2c2;border-radius:12px;padding:14px 16px;font-size:13.5px;margin-top:18px}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat .fcard b{font-size:24px;color:var(--gold)}
+/* ---------- ADMIN ---------- */
+.tabs{display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:22px;padding-bottom:12px}
+.tab{padding:9px 15px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:14px;font-weight:600;cursor:pointer}
+.tab.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c00;border-color:transparent}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border-radius:var(--r);overflow:hidden}
+.tbl th,.tbl td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.tbl th{background:var(--panel2);color:var(--mut);font-size:12.5px;letter-spacing:.5px}
+.tbl tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+.modal{position:fixed;inset:0;background:rgba(5,9,18,.78);z-index:99;display:grid;place-items:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-in{background:var(--panel);border:1px solid var(--line);border-radius:18px;max-width:720px;width:100%;max-height:88vh;overflow:auto;padding:24px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mh h3{font-size:20px}
+.x{background:none;border:none;color:var(--mut);font-size:24px;cursor:pointer}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--grn);color:#052b21;padding:12px 18px;border-radius:12px;font-weight:600;z-index:200;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gal .g{height:96px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center;font-size:28px;cursor:pointer}
+.gbig{height:330px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(135deg,#22355a,#131f36);display:grid;place-items:center;font-size:72px;margin-bottom:10px}
+.gbig img{height:100%;width:100%;object-fit:cover}
+ul.chk{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+ul.chk li{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px}
+ul.chk li::before{content:"✔";color:var(--grn);margin-right:8px;font-weight:700}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-size:13.5px;text-align:center;margin-top:40px}
+.hide{display:none!important}
+@media(max-width:900px){
+  .hero-in,.grid3,.grid2,.frow,.feat,.stat,.radios,.cks,ul.chk{grid-template-columns:1fr}
+  .hero h1{font-size:31px}
+  .nav .lk{display:none} .nav.open .lk{display:block}
+  .nav{flex-wrap:wrap;height:auto;padding:12px 0} .burger{display:block}
+  .nav.open{gap:6px} .nav.open .lk{width:100%}
+  .gal{grid-template-columns:repeat(2,1fr)}
+}
+@media print{
+  header,footer,.noprint{display:none!important}
+  body{background:#fff;color:#000}
+  .bill,.panel,.note{border-color:#bbb;background:#fff;color:#000}
+  table.bt th{background:#eee;color:#000} table.bt tr.sum td{color:#000;background:#f6f6f6}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav" id="nav">
+      <a href="#/" class="logo">🚆 Rail<span>Quote</span></a>
+      <button class="burger" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+      <a href="#/" class="lk">หน้าแรก</a>
+      <a href="#/catalog" class="lk">ประเภทตู้รถไฟ</a>
+      <a href="#/calc" class="lk">คำนวณค่าเช่า</a>
+      <a href="#/faq" class="lk">คำถามที่พบบ่อย</a>
+      <a href="#/admin" class="lk" style="color:var(--gold)">⚙ ผู้ดูแลระบบ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <b>RailQuote</b> — ระบบประเมินค่าเช่าตู้รถไฟ (ต้นแบบเพื่อการศึกษา) · ข้อมูลอัตราค่าบริการเป็นตัวอย่างสมมติ<br>
+    © 2026 RailQuote Prototype · ติดต่อฝ่ายบริการลูกค้า 1690 (ตัวอย่าง)
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   1) DATA LAYER  (จำลอง Back-end Database ด้วย localStorage)
+   ========================================================= */
+const KEY='railquote_db_v1';
+const SEED={
+  carriages:[
+    {id:'c1',name:'ตู้นั่งและนอนปรับอากาศ ชั้น 1',code:'บนอ.ป.',seats:24,beds:24,pricePerKm:65,minPrice:25000,
+     tag:'ยอดนิยม',emoji:'🛏️',images:[],
+     desc:'ตู้โดยสารปรับอากาศชั้น 1 แบบห้องส่วนตัว เหมาะกับคณะผู้บริหาร ทัวร์ระดับพรีเมียม และการเดินทางข้ามคืน',
+     limit:'พ่วงได้กับขบวนรถด่วน / ด่วนพิเศษ · ความเร็วสูงสุด 120 กม./ชม.',
+     fac:['เครื่องปรับอากาศ','ห้องน้ำในตัว','ห้องอาบน้ำ','ปลั๊กไฟทุกที่นั่ง','ตู้เย็น','Wi-Fi']},
+    {id:'c2',name:'ตู้นั่งและนอนปรับอากาศ ชั้น 2',code:'บนท.ป.',seats:40,beds:40,pricePerKm:48,minPrice:18000,
+     tag:'คุ้มค่า',emoji:'🚃',images:[],
+     desc:'ตู้นอนชั้น 2 ความจุสูง คุ้มค่าที่สุดสำหรับหมู่คณะขนาดกลาง-ใหญ่ เช่น ทัศนศึกษา ดูงาน สัมมนา',
+     limit:'พ่วงได้กับขบวนรถเร็ว / ด่วน / ด่วนพิเศษ · ความเร็วสูงสุด 120 กม./ชม.',
+     fac:['เครื่องปรับอากาศ','ห้องน้ำในตัว','ปลั๊กไฟทุกที่นั่ง','ที่เก็บสัมภาระ']},
+    {id:'c3',name:'ตู้เสบียง / ตู้จัดเลี้ยง',code:'บกข.ป.',seats:32,beds:0,pricePerKm:55,minPrice:20000,
+     tag:'จัดเลี้ยง',emoji:'🍽️',images:[],
+     desc:'ตู้เสบียงพร้อมครัวและพื้นที่จัดเลี้ยง รองรับงานเลี้ยงบนขบวน กิจกรรมสันทนาการ และคาราโอเกะ',
+     limit:'ต้องพ่วงร่วมกับตู้โดยสารอย่างน้อย 1 ตู้ · ห้ามพ่วงท้ายขบวน',
+     fac:['เครื่องปรับอากาศ','ครัว / แพนทรี่','ตู้เย็น','ไมโครเวฟ','เครื่องเสียง / คาราโอเกะ','โต๊ะจัดเลี้ยง']},
+    {id:'c4',name:'ตู้ OTOP Train',code:'บชส.',seats:40,beds:0,pricePerKm:45,minPrice:15000,
+     tag:'ชุมชน',emoji:'🎪',images:[],
+     desc:'ตู้กิจกรรมสำหรับงานส่งเสริมการท่องเที่ยวชุมชนและออกร้านสินค้า OTOP ปรับพื้นที่ได้ยืดหยุ่น',
+     limit:'พ่วงได้เฉพาะขบวนรถท้องถิ่น / ขบวนนำเที่ยว · ความเร็วสูงสุด 90 กม./ชม.',
+     fac:['พัดลม / ระบายอากาศ','พื้นที่ออกร้าน','เครื่องเสียง','ปลั๊กไฟ']},
+    {id:'c5',name:'ตู้ SRT Prestige (VIP)',code:'JR-Hokutosei',seats:20,beds:8,pricePerKm:120,minPrice:60000,
+     tag:'พรีเมียม',emoji:'👑',images:[],
+     desc:'ตู้โดยสารระดับพรีเมียมพิเศษ ตกแต่งหรู พร้อมห้องรับรอง VIP โซฟา และบริการเต็มรูปแบบ',
+     limit:'จองล่วงหน้าอย่างน้อย 30 วัน · พ่วงได้เฉพาะขบวนด่วนพิเศษที่กำหนด',
+     fac:['เครื่องปรับอากาศ','ห้องอาบน้ำ','โซฟารับรอง','ทีวี / โปรเจกเตอร์','ตู้เย็น','Wi-Fi','โต๊ะประชุม','ครัว / แพนทรี่']},
+    {id:'c6',name:'ตู้โบกี้ชมวิว (Panorama)',code:'บนอ.ป. Obs.',seats:48,beds:0,pricePerKm:90,minPrice:40000,
+     tag:'ชมวิว',emoji:'🪟',images:[],
+     desc:'ตู้กระจกพาโนรามาเต็มบาน มุมมอง 180 องศา เหมาะกับเส้นทางธรรมชาติ เช่น สายเหนือและสายใต้',
+     limit:'ให้บริการเฉพาะช่วงกลางวัน · ความเร็วสูงสุด 100 กม./ชม.',
+     fac:['เครื่องปรับอากาศ','กระจกพาโนรามา','ห้องน้ำในตัว','Wi-Fi','ปลั๊กไฟทุกที่นั่ง','เครื่องเสียง']}
+  ],
+  stations:[
+    {id:'s0', name:'กรุงเทพอภิวัฒน์ (บางซื่อ)',line:'hub',km:0},
+    {id:'s1', name:'อยุธยา',line:'เหนือ',km:71},
+    {id:'s2', name:'ลพบุรี',line:'เหนือ',km:133},
+    {id:'s3', name:'นครสวรรค์',line:'เหนือ',km:246},
+    {id:'s4', name:'พิษณุโลก',line:'เหนือ',km:389},
+    {id:'s5', name:'เด่นชัย',line:'เหนือ',km:534},
+    {id:'s6', name:'ลำปาง',line:'เหนือ',km:642},
+    {id:'s7', name:'ลำพูน',line:'เหนือ',km:729},
+    {id:'s8', name:'เชียงใหม่',line:'เหนือ',km:751},
+    {id:'s9', name:'นครราชสีมา',line:'อีสานเหนือ',km:264},
+    {id:'s10',name:'ขอนแก่น',line:'อีสานเหนือ',km:450},
+    {id:'s11',name:'อุดรธานี',line:'อีสานเหนือ',km:564},
+    {id:'s12',name:'หนองคาย',line:'อีสานเหนือ',km:624},
+    {id:'s13',name:'สุรินทร์',line:'อีสานใต้',km:420},
+    {id:'s14',name:'อุบลราชธานี',line:'อีสานใต้',km:575},
+    {id:'s15',name:'นครปฐม',line:'ใต้',km:64},
+    {id:'s16',name:'หัวหิน',line:'ใต้',km:212},
+    {id:'s17',name:'ชุมพร',line:'ใต้',km:468},
+    {id:'s18',name:'สุราษฎร์ธานี',line:'ใต้',km:651},
+    {id:'s19',name:'ทุ่งสง',line:'ใต้',km:767},
+    {id:'s20',name:'หาดใหญ่',line:'ใต้',km:945},
+    {id:'s21',name:'สุไหงโก-ลก',line:'ใต้',km:1159},
+    {id:'s22',name:'ฉะเชิงเทรา',line:'ตะวันออก',km:61},
+    {id:'s23',name:'ปราจีนบุรี',line:'ตะวันออก',km:122},
+    {id:'s24',name:'อรัญประเทศ',line:'ตะวันออก',km:255},
+    {id:'s25',name:'ศรีราชา',line:'ชายฝั่งตะวันออก',km:118},
+    {id:'s26',name:'พัทยา',line:'ชายฝั่งตะวันออก',km:155},
+    {id:'s27',name:'บ้านพลูตาหลวง',line:'ชายฝั่งตะวันออก',km:179}
+  ],
+  pricing:{
+    locoPerKm:130, minDistance:50, overnight:5500, shunting:3200,
+    cleaning:2500, staffPerDay:1800, vat:7, holidayPct:15
+  },
+  admins:[{id:'a1',user:'admin',pass:'admin123',name:'ผู้ดูแลระบบสูงสุด',role:'Super Admin'}],
+  quotes:[]
+};
+const FAC_MASTER=['เครื่องปรับอากาศ','พัดลม / ระบายอากาศ','ห้องน้ำในตัว','ห้องอาบน้ำ','ตู้เย็น','ไมโครเวฟ',
+ 'ครัว / แพนทรี่','เครื่องเสียง / คาราโอเกะ','เครื่องเสียง','ทีวี / โปรเจกเตอร์','Wi-Fi','ปลั๊กไฟทุกที่นั่ง',
+ 'ปลั๊กไฟ','โซฟารับรอง','โต๊ะประชุม','โต๊ะจัดเลี้ยง','กระจกพาโนรามา','ที่เก็บสัมภาระ','พื้นที่ออกร้าน','ทางลาดผู้พิการ'];
+
+let DB = JSON.parse(localStorage.getItem(KEY) || 'null') || structuredClone(SEED);
+const save=()=>localStorage.setItem(KEY,JSON.stringify(DB));
+const uid=p=>p+Math.random().toString(36).slice(2,8);
+const money=n=>Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=n=>Number(n||0).toLocaleString('th-TH');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const stn=id=>DB.stations.find(s=>s.id===id);
+const car=id=>DB.carriages.find(c=>c.id===id);
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
+
+/* คำนวณระยะทางจาก กม.สะสมของสถานีศูนย์กลาง */
+function distance(aId,bId){
+  const a=stn(aId),b=stn(bId); if(!a||!b) return 0;
+  if(a.line===b.line||a.line==='hub'||b.line==='hub') return Math.abs(a.km-b.km);
+  return a.km+b.km; // ต่างสายทาง → วิ่งผ่านสถานีศูนย์กลาง
+}
+
+/* =========================================================
+   2) PRICING ENGINE
+   ========================================================= */
+function quote(f){
+  const P=DB.pricing, c=car(f.carId); if(!c) return null;
+  let km=distance(f.from,f.to);
+  if(km<P.minDistance) km=P.minDistance;
+  const legs=f.roundTrip?2:1;
+  const totalKm=km*legs;
+  const items=[];
+
+  let rent=c.pricePerKm*totalKm*f.qty;
+  let minApplied=false;
+  const minTotal=c.minPrice*f.qty*legs;
+  if(rent<minTotal){rent=minTotal;minApplied=true;}
+  items.push({t:`ค่าเช่า ${c.name} × ${f.qty} ตู้`,
+    d:minApplied?`คิดตามอัตราขั้นต่ำ ${num(c.minPrice)} บาท/ตู้/เที่ยว`
+      :`${num(c.pricePerKm)} บาท/กม. × ${num(totalKm)} กม. × ${f.qty} ตู้`, v:rent});
+
+  if(f.mode==='charter'){
+    const loco=P.locoPerKm*totalKm;
+    items.push({t:'ค่าหัวรถจักร (เหมาขบวนจัดเฉพาะ)',d:`${num(P.locoPerKm)} บาท/กม. × ${num(totalKm)} กม.`,v:loco});
+  }else{
+    items.push({t:'ค่าสับเปลี่ยน/พ่วงตู้เข้าขบวนปกติ',d:`เหมาจ่าย × ${legs} เที่ยว`,v:P.shunting*legs});
+  }
+  if(f.nights>0) items.push({t:'ค่าจอดพ่วงค้างคืน',d:`${num(P.overnight)} บาท/คืน × ${f.nights} คืน`,v:P.overnight*f.nights});
+  items.push({t:'ค่าทำความสะอาดตู้',d:`${num(P.cleaning)} บาท/ตู้ × ${f.qty} ตู้`,v:P.cleaning*f.qty});
+  const days=Math.max(1,f.nights+1);
+  items.push({t:'ค่าเจ้าหน้าที่ประจำตู้',d:`${num(P.staffPerDay)} บาท/วัน × ${days} วัน × ${f.qty} ตู้`,v:P.staffPerDay*days*f.qty});
+
+  let sub=items.reduce((s,i)=>s+i.v,0);
+  if(f.holiday){const sur=sub*P.holidayPct/100;items.push({t:`ค่าธรรมเนียมช่วงเทศกาล (+${P.holidayPct}%)`,d:'คิดจากยอดก่อนภาษี',v:sur});sub+=sur;}
+  const vat=sub*P.vat/100;
+  return {km,totalKm,legs,items,sub,vat,total:sub+vat,carriage:c,minApplied,form:f};
+}
+
+/* =========================================================
+   3) ROUTER
+   ========================================================= */
+let STATE={};
+window.addEventListener('hashchange',render);
+window.addEventListener('load',render);
+function render(){
+  const h=(location.hash||'#/').slice(2).split('/');
+  document.querySelectorAll('.lk').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#/'+h[0]));
+  document.getElementById('nav').classList.remove('open');
+  const app=document.getElementById('app');
+  const r=h[0];
+  if(r==='') app.innerHTML=viewHome();
+  else if(r==='catalog') app.innerHTML=viewCatalog();
+  else if(r==='carriage') app.innerHTML=viewDetail(h[1]);
+  else if(r==='calc'){app.innerHTML=viewCalc(h[1]);initCalc();}
+  else if(r==='result'){app.innerHTML=viewResult();}
+  else if(r==='faq') app.innerHTML=viewFaq();
+  else if(r==='admin') app.innerHTML=viewAdmin();
+  else app.innerHTML='<div class="wrap"><section><h2>404 — ไม่พบหน้าที่ต้องการ</h2></section></div>';
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   4) FRONT-END VIEWS
+   ========================================================= */
+function viewHome(){
+  const top=DB.carriages.slice(0,3).map(cardHTML).join('');
+  return `
+  <div class="hero"><div class="wrap"><div class="hero-in">
+    <div>
+      <div class="tagpill">⚡ ประเมินราคาทันที ไม่ต้องสมัครสมาชิก</div>
+      <h1>คำนวณ<em>ค่าเช่าตู้รถไฟ</em><br>ได้ด้วยตัวเอง ภายใน 30 วินาที</h1>
+      <p>เลือกประเภทตู้ ระบุสถานีต้นทาง–ปลายทาง ระบบจะคำนวณระยะทางจริงและประเมินค่าบริการแบบแยกรายการให้ทันที พร้อมบันทึกเป็นเอกสาร PDF เพื่อใช้ประกอบการวางแผนงบประมาณ</p>
+      <div class="hero-cta">
+        <a href="#/calc" class="btn btn-g">🧮 คำนวณค่าเช่ารถไฟ คลิกที่นี่</a>
+        <a href="#/catalog" class="btn btn-o">🚃 ดูประเภทตู้รถไฟทั้งหมด</a>
+      </div>
+    </div>
+    <div class="train-art">
+      <div style="display:flex;justify-content:space-between;color:var(--mut);font-size:13px"><span>SRT PRESTIGE</span><span>CAR NO. 01</span></div>
+      <div class="win"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;color:var(--gold2);font-weight:700">
+        <span>🚆 ${DB.stations.length} สถานี</span><span>${DB.carriages.length} ประเภทตู้</span>
+      </div>
+      <div class="rail"></div>
+    </div>
+  </div></div></div>
+
+  <div class="wrap"><div class="feat">
+    <div class="fcard"><div class="ico">⏱️</div><b>ประเมินราคา 24 ชม.</b><small>ใช้งานได้ตลอดเวลาโดยไม่ต้องเข้าสู่ระบบ</small></div>
+    <div class="fcard"><div class="ico">📋</div><b>ข้อมูลตู้ครบถ้วน</b><small>ความจุ สิ่งอำนวยความสะดวก และข้อจำกัด</small></div>
+    <div class="fcard"><div class="ico">📐</div><b>คำนวณตามระยะทางจริง</b><small>อ้างอิงระยะทางสะสมรายสถานี</small></div>
+    <div class="fcard"><div class="ico">🧾</div><b>บิลแยกรายการ</b><small>โปร่งใส พิมพ์/บันทึก PDF ได้ทันที</small></div>
+  </div></div>
+
+  <div class="wrap"><section>
+    <div class="sec-h"><div><h2>ตู้รถไฟยอดนิยม</h2><p>เลือกดูรายละเอียดหรือกดคำนวณค่าเช่าได้ทันที</p></div>
+      <a href="#/catalog" class="btn btn-o btn-s">ดูทั้งหมด →</a></div>
+    <div class="grid3">${top}</div>
+  </section></div>
+
+  <div class="wrap"><section style="padding-top:0">
+    <div class="panel" style="background:linear-gradient(135deg,#1b2942,#111a2e);text-align:center;padding:38px">
+      <h2 style="font-size:25px;margin-bottom:8px">พร้อมวางแผนการเดินทางของคุณแล้วหรือยัง?</h2>
+      <p style="color:var(--mut);margin-bottom:20px">กรอกข้อมูลเพียง 4 ช่อง ก็ทราบค่าบริการเบื้องต้นได้ทันที</p>
+      <a href="#/calc" class="btn btn-g">เริ่มคำนวณค่าบริการ →</a>
+    </div>
+  </section></div>`;
+}
+
+function cardHTML(c){
+  const img=c.images&&c.images[0]?`<img src="${esc(c.images[0])}" alt="${esc(c.name)}">`:c.emoji||'🚃';
+  return `<div class="card">
+    <div class="thumb">${img}${c.tag?`<span class="badge">${esc(c.tag)}</span>`:''}</div>
+    <div class="card-b">
+      <div><h3>${esc(c.name)}</h3><small style="color:var(--mut)">รหัสตู้ ${esc(c.code||'-')}</small></div>
+      <div class="cap"><i>💺 ${num(c.seats)} ที่นั่ง</i>${c.beds>0?`<i>🛏️ ${num(c.beds)} ที่นอน</i>`:''}</div>
+      <div class="fx">${(c.fac||[]).slice(0,4).map(f=>`<span class="chip">${esc(f)}</span>`).join('')}${(c.fac||[]).length>4?`<span class="chip">+${c.fac.length-4}</span>`:''}</div>
+      <div class="price"><b>${num(c.pricePerKm)}</b><small>บาท/กม. · ขั้นต่ำ ${num(c.minPrice)} บาท</small></div>
+      <div class="card-act">
+        <a href="#/carriage/${c.id}" class="btn btn-o btn-s">ดูรายละเอียด</a>
+        <a href="#/calc/${c.id}" class="btn btn-g btn-s">คำนวณค่าเช่าตู้นี้</a>
+      </div>
+    </div></div>`;
+}
+
+function viewCatalog(){
+  return `<div class="wrap"><section>
+    <div class="sec-h"><div><h2>รายการประเภทตู้รถไฟ</h2>
+      <p>ทั้งหมด ${DB.carriages.length} ประเภท · ข้อมูลความจุและสิ่งอำนวยความสะดวกอัปเดตจากระบบหลังบ้าน</p></div></div>
+    <div class="grid3">${DB.carriages.map(cardHTML).join('')}</div>
+  </section></div>`;
+}
+
+function viewDetail(id){
+  const c=car(id); if(!c) return '<div class="wrap"><section><h2>ไม่พบข้อมูลตู้รถไฟ</h2></section></div>';
+  const imgs=(c.images&&c.images.length)?c.images:[];
+  const big=imgs[0]?`<img src="${esc(imgs[0])}" id="gbigimg">`:(c.emoji||'🚃');
+  return `<div class="wrap"><section>
+    <a href="#/catalog" style="color:var(--mut);font-size:14px">← กลับหน้ารายการตู้รถไฟ</a>
+    <div class="grid2" style="margin-top:18px;align-items:start">
+      <div>
+        <div class="gbig" id="gbig">${big}</div>
+        <div class="gal">${imgs.length?imgs.map((u,i)=>`<div class="g" onclick="document.getElementById('gbig').innerHTML='<img src=\\'${esc(u)}\\'>'"><img src="${esc(u)}"></div>`).join(''):
+          [1,2,3,4].map(()=>`<div class="g">${c.emoji||'🚃'}</div>`).join('')}</div>
+      </div>
+      <div class="panel">
+        <span class="chip" style="color:var(--gold2);border-color:rgba(240,180,41,.4)">${esc(c.tag||'มาตรฐาน')}</span>
+        <h2 style="font-size:27px;margin:10px 0 4px">${esc(c.name)}</h2>
+        <p style="color:var(--mut);font-size:14px">รหัสตู้ ${esc(c.code||'-')}</p>
+        <p style="margin:14px 0;color:#cfdcf5">${esc(c.desc||'')}</p>
+        <div class="frow" style="gap:12px;margin-bottom:16px">
+          <div class="fcard"><small>ความจุที่นั่ง</small><b style="color:var(--gold);font-size:22px">${num(c.seats)} ที่นั่ง</b></div>
+          <div class="fcard"><small>ความจุที่นอน</small><b style="color:var(--gold);font-size:22px">${c.beds>0?num(c.beds)+' ที่นอน':'—'}</b></div>
+        </div>
+        <label style="display:block;margin-bottom:9px">สิ่งอำนวยความสะดวก</label>
+        <ul class="chk">${(c.fac||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+        <div class="note" style="background:rgba(76,141,255,.08);border-color:rgba(76,141,255,.3);color:#bcd4ff">
+          <b>⚠ ข้อจำกัดการให้บริการ</b><br>${esc(c.limit||'-')}
+        </div>
+        <div class="price" style="margin-top:16px"><b>${num(c.pricePerKm)}</b><small>บาท/กม. · ค่าบริการขั้นต่ำ ${num(c.minPrice)} บาท/เที่ยว</small></div>
+        <a href="#/calc/${c.id}" class="btn btn-g" style="width:100%;margin-top:14px">🧮 คำนวณค่าเช่าตู้นี้</a>
+      </div>
+    </div>
+  </section></div>`;
+}
+
+function viewCalc(preId){
+  const today=new Date().toISOString().slice(0,10);
+  return `<div class="wrap"><section>
+    <div class="sec-h"><div><h2>คำนวณค่าบริการเบื้องต้น</h2>
+      <p>ไม่ต้องเข้าสู่ระบบ · กรอกข้อมูลให้ครบแล้วกดคำนวณ</p></div></div>
+    <div class="grid2" style="grid-template-columns:1.25fr .75fr;align-items:start">
+      <div class="panel">
+        <div class="frow">
+          <div class="fg"><label>🚩 สถานีต้นทาง</label>
+            <input id="fromTxt" placeholder="พิมพ์ชื่อสถานี เช่น กรุงเทพ" autocomplete="off">
+            <input type="hidden" id="from"><div id="fromDrop"></div></div>
+          <div class="fg"><label>🏁 สถานีปลายทาง</label>
+            <input id="toTxt" placeholder="พิมพ์ชื่อสถานี เช่น เชียงใหม่" autocomplete="off">
+            <input type="hidden" id="to"><div id="toDrop"></div></div>
+        </div>
+        <div class="fg"><label>🚂 รูปแบบการเช่า</label>
+          <div class="radios">
+            <label class="radio on" id="m_attach"><input type="radio" name="mode" value="attach" checked hidden>
+              <div><b>พ่วงไปกับขบวนปกติ</b><small>ประหยัดกว่า · ยึดตามตารางเดินรถ</small></div></label>
+            <label class="radio" id="m_charter"><input type="radio" name="mode" value="charter" hidden>
+              <div><b>เหมาขบวนจัดเฉพาะ</b><small>รวมค่าหัวรถจักร · กำหนดเวลาเองได้</small></div></label>
+          </div></div>
+        <div class="frow">
+          <div class="fg"><label>🚃 ประเภทตู้รถไฟ</label>
+            <select id="carId">${DB.carriages.map(c=>`<option value="${c.id}" ${c.id===preId?'selected':''}>${esc(c.name)} — ${num(c.pricePerKm)} บ./กม.</option>`).join('')}</select></div>
+          <div class="fg"><label>🔢 จำนวนตู้ที่ต้องการ</label><input type="number" id="qty" value="1" min="1" max="12"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>📅 วันเดินทาง (ไป)</label><input type="date" id="d1" value="${today}"></div>
+          <div class="fg"><label>📅 วันเดินทางกลับ (ถ้ามี)</label><input type="date" id="d2"></div>
+        </div>
+        <div class="fg"><label>⚙️ ตัวเลือกเพิ่มเติม</label>
+          <div class="cks">
+            <label class="ck"><input type="checkbox" id="roundTrip" checked> เดินทางไป-กลับ</label>
+            <label class="ck"><input type="checkbox" id="holiday"> เดินทางช่วงเทศกาล</label>
+            <label class="ck"><input type="checkbox" id="overnightChk"> จอดพ่วงค้างคืนปลายทาง</label>
+          </div></div>
+        <div class="fg hide" id="nightsBox"><label>🌙 จำนวนคืนที่จอดค้าง</label><input type="number" id="nights" value="1" min="0" max="30"></div>
+        <div class="frow">
+          <div class="fg"><label>👤 ชื่อผู้ติดต่อ (ไม่บังคับ)</label><input id="cname" placeholder="เช่น คุณสมชาย"></div>
+          <div class="fg"><label>🏢 หน่วยงาน/องค์กร (ไม่บังคับ)</label><input id="corg" placeholder="เช่น บริษัท ตัวอย่าง จำกัด"></div>
+        </div>
+        <button class="btn btn-g" style="width:100%" onclick="doCalc()">🧮 คำนวณค่าบริการ</button>
+        <p id="err" style="color:var(--red);font-size:13.5px;margin-top:10px"></p>
+      </div>
+      <div class="panel">
+        <h3 style="font-size:17px;margin-bottom:12px">📌 อัตราค่าบริการปัจจุบัน</h3>
+        <table class="bt" style="font-size:13.5px">
+          <tr><td style="padding:9px 0">ค่าหัวรถจักร (เหมาขบวน)</td><td class="n" style="padding:9px 0">${num(DB.pricing.locoPerKm)} บ./กม.</td></tr>
+          <tr><td style="padding:9px 0">ค่าสับเปลี่ยน/พ่วงตู้</td><td class="n" style="padding:9px 0">${num(DB.pricing.shunting)} บ./เที่ยว</td></tr>
+          <tr><td style="padding:9px 0">ค่าจอดพ่วงค้างคืน</td><td class="n" style="padding:9px 0">${num(DB.pricing.overnight)} บ./คืน</td></tr>
+          <tr><td style="padding:9px 0">ค่าทำความสะอาด</td><td class="n" style="padding:9px 0">${num(DB.pricing.cleaning)} บ./ตู้</td></tr>
+          <tr><td style="padding:9px 0">ค่าเจ้าหน้าที่ประจำตู้</td><td class="n" style="padding:9px 0">${num(DB.pricing.staffPerDay)} บ./วัน</td></tr>
+          <tr><td style="padding:9px 0">ค่าธรรมเนียมเทศกาล</td><td class="n" style="padding:9px 0">+${DB.pricing.holidayPct}%</td></tr>
+          <tr><td style="padding:9px 0;border:none">ภาษีมูลค่าเพิ่ม</td><td class="n" style="padding:9px 0;border:none">${DB.pricing.vat}%</td></tr>
+        </table>
+        <div class="note" style="background:rgba(45,212,167,.08);border-color:rgba(45,212,167,.3);color:#a9f0dc">
+          ระยะทางขั้นต่ำในการคิดค่าบริการคือ ${num(DB.pricing.minDistance)} กม. หากระยะทางจริงน้อยกว่านี้ ระบบจะคิดที่ขั้นต่ำ
+        </div>
+      </div>
+    </div>
+  </section></div>`;
+}
+
+function initCalc(){
+  ['from','to'].forEach(k=>{
+    const txt=document.getElementById(k+'Txt'), hid=document.getElementById(k), box=document.getElementById(k+'Drop');
+    const show=q=>{
+      const list=DB.stations.filter(s=>s.name.includes(q)||q==='').slice(0,40);
+      box.innerHTML=`<div class="drop">${list.map(s=>`<div data-id="${s.id}" data-n="${esc(s.name)}">${esc(s.name)}<small>สาย${s.line==='hub'?'ศูนย์กลาง':esc(s.line)} · กม.${num(s.km)}</small></div>`).join('')||'<div><small>ไม่พบสถานี</small></div>'}</div>`;
+      box.querySelectorAll('[data-id]').forEach(d=>d.onclick=()=>{txt.value=d.dataset.n;hid.value=d.dataset.id;box.innerHTML='';});
+    };
+    txt.oninput=()=>{hid.value='';show(txt.value)};
+    txt.onfocus=()=>show(txt.value);
+    document.addEventListener('click',e=>{if(!box.contains(e.target)&&e.target!==txt)box.innerHTML='';});
+  });
+  document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=()=>{
+    document.getElementById('m_attach').classList.toggle('on',r.value==='attach'&&r.checked||document.querySelector('input[name=mode]:checked').value==='attach');
+    document.getElementById('m_charter').classList.toggle('on',document.querySelector('input[name=mode]:checked').value==='charter');
+  });
+  document.getElementById('overnightChk').onchange=e=>document.getElementById('nightsBox').classList.toggle('hide',!e.target.checked);
+}
+
+function doCalc(){
+  const g=id=>document.getElementById(id);
+  const f={from:g('from').value,to:g('to').value,carId:g('carId').value,
+    qty:Math.max(1,+g('qty').value||1),
+    mode:document.querySelector('input[name=mode]:checked').value,
+    d1:g('d1').value,d2:g('d2').value,
+    roundTrip:g('roundTrip').checked, holiday:g('holiday').checked,
+    nights:g('overnightChk').checked?Math.max(0,+g('nights').value||0):0,
+    cname:g('cname').value,corg:g('corg').value};
+  if(!f.from||!f.to){g('err').textContent='⚠ กรุณาเลือกสถานีต้นทางและปลายทางจากรายการที่ระบบแนะนำ';return;}
+  if(f.from===f.to){g('err').textContent='⚠ สถานีต้นทางและปลายทางต้องไม่ซ้ำกัน';return;}
+  const q=quote(f); if(!q){g('err').textContent='⚠ ไม่พบข้อมูลตู้รถไฟ';return;}
+  STATE.result=q;
+  DB.quotes.unshift({id:uid('q'),at:new Date().toISOString(),from:stn(f.from).name,to:stn(f.to).name,
+    km:q.totalKm,car:q.carriage.name,qty:f.qty,mode:f.mode,total:q.total,cname:f.cname,corg:f.corg});
+  DB.quotes=DB.quotes.slice(0,200); save();
+  location.hash='#/result';
+}
+
+function viewResult(){
+  const q=STATE.result;
+  if(!q) return `<div class="wrap"><section class="panel" style="text-align:center">
+    <h2>ยังไม่มีผลการคำนวณ</h2><p style="color:var(--mut);margin:10px 0 18px">กรุณากรอกแบบฟอร์มเพื่อประเมินราคา</p>
+    <a href="#/calc" class="btn btn-g">ไปหน้าคำนวณ</a></section></div>`;
+  const f=q.form, no='QT-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
+  return `<div class="wrap"><section>
+    <div class="noprint" style="margin-bottom:16px"><a href="#/calc" style="color:var(--mut);font-size:14px">← แก้ไขข้อมูลการคำนวณ</a></div>
+    <div class="bill">
+      <div class="bill-h">
+        <div>
+          <div class="route">${esc(f.fromName||stn(f.from).name)} <span class="ar">→</span> ${esc(stn(f.to).name)}</div>
+          <p style="color:var(--mut);font-size:14px;margin-top:5px">
+            ระยะทางเที่ยวเดียว ${num(q.km)} กม. · ${q.legs===2?'เดินทางไป-กลับ รวม':'รวม'} ${num(q.totalKm)} กม.
+            · ${f.mode==='charter'?'เหมาขบวนจัดเฉพาะ':'พ่วงกับขบวนปกติ'}
+          </p>
+        </div>
+        <div style="text-align:right;font-size:13.5px;color:var(--mut)">
+          <b style="color:var(--gold);font-size:15px">เลขที่ ${no}</b><br>
+          วันที่ออกเอกสาร ${new Date().toLocaleDateString('th-TH')}<br>
+          เดินทาง ${f.d1?new Date(f.d1).toLocaleDateString('th-TH'):'-'}${f.d2?' – '+new Date(f.d2).toLocaleDateString('th-TH'):''}
+        </div>
+      </div>
+      ${(f.cname||f.corg)?`<div style="padding:14px 22px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mut)">
+        ผู้ขอประเมินราคา: <b style="color:var(--txt)">${esc(f.cname||'-')}</b> ${f.corg?'· '+esc(f.corg):''}</div>`:''}
+      <table class="bt">
+        <thead><tr><th style="width:52%">รายการ</th><th>การคำนวณ</th><th class="n">จำนวนเงิน (บาท)</th></tr></thead>
+        <tbody>
+          ${q.items.map(i=>`<tr><td><b>${esc(i.t)}</b></td><td style="color:var(--mut);font-size:13px">${esc(i.d)}</td><td class="n">${money(i.v)}</td></tr>`).join('')}
+          <tr><td colspan="2" style="text-align:right;color:var(--mut)">รวมเป็นเงิน</td><td class="n">${money(q.sub)}</td></tr>
+          <tr><td colspan="2" style="text-align:right;color:var(--mut)">ภาษีมูลค่าเพิ่ม ${DB.pricing.vat}%</td><td class="n">${money(q.vat)}</td></tr>
+          <tr class="sum"><td colspan="2" style="text-align:right">ยอดรวมค่าประเมินเบื้องต้น</td><td class="n">${money(q.total)}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    ${q.minApplied?`<div class="note" style="background:rgba(240,180,41,.08);border-color:rgba(240,180,41,.35);color:#ffe1a3">
+      ℹ️ ระยะทางที่เลือกทำให้ค่าเช่าต่ำกว่าอัตราขั้นต่ำ ระบบจึงคิดที่ราคาเหมาขั้นต่ำ ${num(q.carriage.minPrice)} บาท/ตู้/เที่ยว</div>`:''}
+    <div class="note">
+      <b>หมายเหตุสำคัญ (Disclaimer)</b><br>
+      นี่คือราคาประเมินเบื้องต้นเพื่อใช้ในการวางแผนงบประมาณเท่านั้น อัตราค่าบริการจริงอาจเปลี่ยนแปลงตามประกาศของหน่วยงาน
+      ความพร้อมของตู้โดยสาร ตารางเดินรถ และเงื่อนไขเฉพาะของแต่ละเส้นทาง
+      กรุณาติดต่อฝ่ายบริการลูกค้าเพื่อยืนยันการจองอย่างเป็นทางการ
+    </div>
+    <div class="noprint" style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-g" onclick="window.print()">🖨️ บันทึกเป็น PDF / พิมพ์เอกสาร</button>
+      <a href="#/calc" class="btn btn-o">↺ คำนวณใหม่</a>
+      <a href="#/catalog" class="btn btn-o">🚃 ดูตู้ประเภทอื่น</a>
+    </div>
+  </section></div>`;
+}
+
+function viewFaq(){
+  const qa=[
+    ['ต้องสมัครสมาชิกไหม?','ไม่ต้อง ระบบคำนวณราคาเปิดให้ใช้งานฟรีตลอด 24 ชั่วโมง การเข้าสู่ระบบมีเฉพาะเจ้าหน้าที่ผู้ดูแลเท่านั้น'],
+    ['ระบบคำนวณระยะทางอย่างไร?','ใช้ระยะทางสะสม (กม.) ของแต่ละสถานีจากสถานีศูนย์กลาง หากต้นทาง–ปลายทางอยู่คนละสายทาง ระบบจะคำนวณเป็นผลรวมของระยะทางผ่านสถานีศูนย์กลาง'],
+    ['ราคาที่ได้ใช้ยืนยันการจองได้เลยไหม?','ไม่ได้ เป็นราคาประเมินเบื้องต้นเท่านั้น ต้องติดต่อเจ้าหน้าที่เพื่อยืนยันความพร้อมของตู้และตารางเดินรถ'],
+    ['ต่างกันอย่างไรระหว่างพ่วงขบวนปกติกับเหมาขบวน?','แบบพ่วงจะนำตู้ไปต่อกับขบวนที่วิ่งตามตารางอยู่แล้ว ราคาถูกกว่าแต่ต้องยึดตามเวลาเดินรถ ส่วนเหมาขบวนจัดเฉพาะจะรวมค่าหัวรถจักรและกำหนดเวลาเองได้'],
+    ['อัปเดตราคาบ่อยแค่ไหน?','เจ้าหน้าที่สามารถแก้ไขอัตราค่าบริการผ่านระบบหลังบ้านได้ทันที และหน้าเว็บจะใช้ค่าล่าสุดในการคำนวณเสมอ']
+  ];
+  return `<div class="wrap"><section>
+    <div class="sec-h"><div><h2>คำถามที่พบบ่อย</h2><p>รวมข้อสงสัยเกี่ยวกับการเช่าและการคำนวณราคา</p></div></div>
+    <div style="display:grid;gap:12px">${qa.map(([q,a])=>`<div class="panel"><b style="font-size:16px">❓ ${q}</b><p style="color:var(--mut);margin-top:7px">${a}</p></div>`).join('')}</div>
+  </section></div>`;
+}
+
+/* =========================================================
+   5) ADMIN (BACK-END UI)
+   ========================================================= */
+let ADMIN=null, TAB='dash';
+function viewAdmin(){
+  if(!ADMIN) return `<div class="wrap"><section style="max-width:430px;margin:0 auto">
+    <div class="panel">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:42px">⚙️</div>
+        <h2 style="font-size:22px;margin-top:6px">เข้าสู่ระบบผู้ดูแล</h2>
+        <p style="color:var(--mut);font-size:13.5px">สำหรับเจ้าหน้าที่ที่ได้รับสิทธิ์เท่านั้น</p>
+      </div>
+      <div class="fg"><label>ชื่อผู้ใช้</label><input id="au" placeholder="admin" onkeydown="if(event.key==='Enter')login()"></div>
+      <div class="fg"><label>รหัสผ่าน</label><input type="password" id="ap" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()"></div>
+      <button class="btn btn-g" style="width:100%" onclick="login()">🔐 เข้าสู่ระบบ</button>
+      <p id="aerr" style="color:var(--red);font-size:13.5px;margin-top:10px;text-align:center"></p>
+      <p style="color:var(--mut);font-size:12.5px;text-align:center;margin-top:14px">บัญชีทดสอบ: <b>admin</b> / <b>admin123</b></p>
+    </div></section></div>`;
+
+  const tabs=[['dash','📊 ภาพรวม'],['car','🚃 จัดการตู้รถไฟ'],['stn','📍 สถานี & ระยะทาง'],
+              ['price','💰 โครงสร้างราคา'],['quo','🧾 ใบประเมินที่บันทึก'],['usr','👥 บัญชีผู้ดูแล']];
+  return `<div class="wrap"><section>
+    <div class="sec-h">
+      <div><h2>ระบบหลังบ้าน</h2><p>ยินดีต้อนรับ <b style="color:var(--gold)">${esc(ADMIN.name)}</b> · ${esc(ADMIN.role)}</p></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-o btn-s" onclick="resetDB()">↺ รีเซ็ตข้อมูลตัวอย่าง</button>
+        <button class="btn btn-d btn-s" onclick="ADMIN=null;render()">ออกจากระบบ</button>
+      </div>
+    </div>
+    <div class="tabs">${tabs.map(([k,l])=>`<div class="tab ${TAB===k?'on':''}" onclick="TAB='${k}';render()">${l}</div>`).join('')}</div>
+    <div id="tabBody">${
+      TAB==='dash'?tabDash():TAB==='car'?tabCar():TAB==='stn'?tabStn():
+      TAB==='price'?tabPrice():TAB==='quo'?tabQuo():tabUsr()}</div>
+  </section></div>`;
+}
+function login(){
+  const u=document.getElementById('au').value.trim(), p=document.getElementById('ap').value;
+  const a=DB.admins.find(x=>x.user===u&&x.pass===p);
+  if(!a){document.getElementById('aerr').textContent='⚠ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';return;}
+  ADMIN=a;TAB='dash';toast('เข้าสู่ระบบสำเร็จ');render();
+}
+function resetDB(){if(confirm('ยืนยันคืนค่าข้อมูลทั้งหมดเป็นค่าตัวอย่างเริ่มต้น?')){DB=structuredClone(SEED);save();toast('รีเซ็ตข้อมูลแล้ว');render();}}
+
+function tabDash(){
+  const rev=DB.quotes.reduce((s,q)=>s+q.total,0);
+  return `<div class="stat">
+      <div class="fcard"><small>ประเภทตู้ทั้งหมด</small><b>${DB.carriages.length}</b></div>
+      <div class="fcard"><small>สถานีในระบบ</small><b>${DB.stations.length}</b></div>
+      <div class="fcard"><small>ใบประเมินที่ออก</small><b>${DB.quotes.length}</b></div>
+      <div class="fcard"><small>มูลค่ารวมที่ประเมิน</small><b style="font-size:19px">฿${num(Math.round(rev))}</b></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h3 style="font-size:17px;margin-bottom:12px">🧾 ใบประเมินล่าสุด</h3>
+        ${DB.quotes.length?`<div class="scroll"><table class="tbl"><thead><tr><th>เส้นทาง</th><th>ตู้</th><th style="text-align:right">ยอดรวม</th></tr></thead><tbody>
+        ${DB.quotes.slice(0,7).map(q=>`<tr><td>${esc(q.from)} → ${esc(q.to)}</td><td>${esc(q.car)}</td><td style="text-align:right;color:var(--gold)">฿${num(Math.round(q.total))}</td></tr>`).join('')}
+        </tbody></table></div>`:'<p style="color:var(--mut)">ยังไม่มีข้อมูล</p>'}
+      </div>
+      <div class="panel"><h3 style="font-size:17px;margin-bottom:12px">💰 อัตราที่ใช้งานอยู่</h3>
+        <div class="scroll"><table class="tbl"><tbody>
+        <tr><td>ค่าหัวรถจักร</td><td style="text-align:right">${num(DB.pricing.locoPerKm)} บ./กม.</td></tr>
+        <tr><td>ค่าสับเปลี่ยน/พ่วง</td><td style="text-align:right">${num(DB.pricing.shunting)} บ.</td></tr>
+        <tr><td>ค่าจอดค้างคืน</td><td style="text-align:right">${num(DB.pricing.overnight)} บ./คืน</td></tr>
+        <tr><td>ค่าทำความสะอาด</td><td style="text-align:right">${num(DB.pricing.cleaning)} บ./ตู้</td></tr>
+        <tr><td>ภาษีมูลค่าเพิ่ม</td><td style="text-align:right">${DB.pricing.vat}%</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>`;
+}
+
+/* ---- Carriage CRUD ---- */
+function tabCar(){
+  return `<div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn btn-g btn-s" onclick="editCar()">➕ เพิ่มประเภทตู้ใหม่</button></div>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>ตู้รถไฟ</th><th>ที่นั่ง</th><th>ที่นอน</th><th>ราคา/กม.</th><th>ขั้นต่ำ</th><th>สิ่งอำนวยฯ</th><th style="text-align:right">จัดการ</th></tr></thead>
+      <tbody>${DB.carriages.map(c=>`<tr>
+        <td><b>${esc(c.name)}</b><br><small style="color:var(--mut)">${esc(c.code||'')}</small></td>
+        <td>${num(c.seats)}</td><td>${c.beds>0?num(c.beds):'—'}</td>
+        <td style="color:var(--gold)">${num(c.pricePerKm)}</td><td>${num(c.minPrice)}</td>
+        <td><small style="color:var(--mut)">${(c.fac||[]).length} รายการ</small></td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="btn btn-o btn-s" onclick="editCar('${c.id}')">แก้ไข</button>
+          <button class="btn btn-d btn-s" onclick="delCar('${c.id}')">ลบ</button></td></tr>`).join('')}
+      </tbody></table></div>`;
+}
+function delCar(id){if(confirm('ยืนยันลบประเภทตู้นี้?')){DB.carriages=DB.carriages.filter(c=>c.id!==id);save();toast('ลบแล้ว');render();}}
+function editCar(id){
+  const c=car(id)||{id:'',name:'',code:'',seats:0,beds:0,pricePerKm:0,minPrice:0,tag:'',emoji:'🚃',desc:'',limit:'',fac:[],images:[]};
+  openModal(id?'แก้ไขประเภทตู้รถไฟ':'เพิ่มประเภทตู้รถไฟ',`
+    <div class="frow"><div class="fg"><label>ชื่อประเภทตู้ *</label><input id="e_name" value="${esc(c.name)}"></div>
+    <div class="fg"><label>รหัสตู้</label><input id="e_code" value="${esc(c.code)}"></div></div>
+    <div class="frow"><div class="fg"><label>จำนวนที่นั่ง</label><input type="number" id="e_seats" value="${c.seats}"></div>
+    <div class="fg"><label>จำนวนที่นอน</label><input type="number" id="e_beds" value="${c.beds}"></div></div>
+    <div class="frow"><div class="fg"><label>ราคา (บาท/กม.) *</label><input type="number" id="e_ppk" value="${c.pricePerKm}"></div>
+    <div class="fg"><label>ราคาขั้นต่ำ (บาท/เที่ยว)</label><input type="number" id="e_min" value="${c.minPrice}"></div></div>
+    <div class="frow"><div class="fg"><label>ป้ายกำกับ (Tag)</label><input id="e_tag" value="${esc(c.tag)}" placeholder="เช่น ยอดนิยม"></div>
+    <div class="fg"><label>ไอคอน (Emoji)</label><input id="e_emoji" value="${esc(c.emoji)}"></div></div>
+    <div class="fg"><label>คำอธิบาย</label><textarea id="e_desc" rows="3">${esc(c.desc)}</textarea></div>
+    <div class="fg"><label>ข้อจำกัดการให้บริการ</label><textarea id="e_limit" rows="2">${esc(c.limit)}</textarea></div>
+    <div class="fg"><label>ลิงก์รูปภาพ (1 บรรทัด = 1 รูป) — แกลเลอรีหน้ารายละเอียด</label>
+      <textarea id="e_img" rows="3" placeholder="https://example.com/car1.jpg">${esc((c.images||[]).join('\\n'))}</textarea></div>
+    <div class="fg"><label>สิ่งอำนวยความสะดวก</label>
+      <div class="cks">${FAC_MASTER.map((f,i)=>`<label class="ck"><input type="checkbox" class="e_fac" value="${esc(f)}" ${(c.fac||[]).includes(f)?'checked':''}> ${esc(f)}</label>`).join('')}</div></div>
+    <button class="btn btn-g" style="width:100%" onclick="saveCar('${id||''}')">💾 บันทึกข้อมูล</button>`);
+}
+function saveCar(id){
+  const v=i=>document.getElementById(i).value;
+  const o={id:id||uid('c'),name:v('e_name').trim(),code:v('e_code').trim(),
+    seats:+v('e_seats')||0,beds:+v('e_beds')||0,pricePerKm:+v('e_ppk')||0,minPrice:+v('e_min')||0,
+    tag:v('e_tag').trim(),emoji:v('e_emoji').trim()||'🚃',desc:v('e_desc').trim(),limit:v('e_limit').trim(),
+    images:v('e_img').split('\n').map(s=>s.trim()).filter(Boolean),
+    fac:[...document.querySelectorAll('.e_fac:checked')].map(x=>x.value)};
+  if(!o.name||!o.pricePerKm){alert('กรุณากรอกชื่อตู้และราคาต่อกิโลเมตร');return;}
+  const i=DB.carriages.findIndex(c=>c.id===id);
+  i>=0?DB.carriages[i]=o:DB.carriages.push(o);
+  save();closeModal();toast('บันทึกข้อมูลตู้รถไฟแล้ว');render();
+}
+
+/* ---- Station CRUD ---- */
+function tabStn(){
+  const lines=[...new Set(DB.stations.map(s=>s.line))];
+  return `<div class="panel" style="margin-bottom:16px">
+      <b>📐 หลักการคำนวณระยะทาง</b>
+      <p style="color:var(--mut);font-size:13.5px;margin-top:6px">
+        กรอก "ระยะทางสะสม (กม.)" ของแต่ละสถานีนับจากสถานีศูนย์กลาง (กม.0) ระบบจะหาผลต่างอัตโนมัติเมื่ออยู่สายเดียวกัน
+        และรวมระยะทางผ่านศูนย์กลางเมื่อต่างสายทาง — ไม่ต้องกรอกตารางเมทริกซ์ทั้งหมด</p></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="dA" list="stnList" placeholder="สถานีต้นทาง" style="width:180px">
+        <input id="dB" list="stnList" placeholder="สถานีปลายทาง" style="width:180px">
+        <button class="btn btn-o btn-s" onclick="testDist()">🔍 ทดสอบระยะทาง</button>
+        <span id="dOut" style="color:var(--gold);font-weight:700"></span>
+        <datalist id="stnList">${DB.stations.map(s=>`<option value="${esc(s.name)}">`).join('')}</datalist>
+      </div>
+      <button class="btn btn-g btn-s" onclick="editStn()">➕ เพิ่มสถานี</button></div>
+    <div class="scroll"><table class="tbl">
+      <thead><tr><th>ชื่อสถานี</th><th>สายทาง</th><th>ระยะทางสะสม (กม.)</th><th style="text-align:right">จัดการ</th></tr></thead>
+      <tbody>${DB.stations.slice().sort((a,b)=>a.line.localeCompare(b.line)||a.km-b.km).map(s=>`<tr>
+        <td><b>${esc(s.name)}</b></td><td><span class="chip">${s.line==='hub'?'ศูนย์กลาง':esc(s.line)}</span></td>
+        <td style="color:var(--gold)">${num(s.km)}</td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="btn btn-o btn-s" onclick="editStn('${s.id}')">แก้ไข</button>
+          <button class="btn btn-d btn-s" onclick="delStn('${s.id}')">ลบ</button></td></tr>`).join('')}
+      </tbody></table></div>`;
+}
+function testDist(){
+  const a=DB.stations.find(s=>s.name===document.getElementById('dA').value);
+  const b=DB.stations.find(s=>s.name===document.getElementById('dB').value);
+  document.getElementById('dOut').textContent=(a&&b)?`= ${num(distance(a.id,b.id))} กม.`:'⚠ เลือกสถานีให้ถูกต้อง';
+}
+function delStn(id){if(confirm('ยืนยันลบสถานีนี้?')){DB.stations=DB.stations.filter(s=>s.id!==id);save();toast('ลบแล้ว');render();}}
+function editStn(id){
+  const s=stn(id)||{id:'',name:'',line:'',km:0};
+  const lines=[...new Set(DB.stations.map(x=>x.line))];
+  openModal(id?'แก้ไขสถานี':'เพิ่มสถานีใหม่',`
+    <div class="fg"><label>ชื่อสถานี *</label><input id="s_name" value="${esc(s.name)}"></div>
+    <div class="frow">
+      <div class="fg"><label>สายทาง *</label><input id="s_line" list="lineList" value="${esc(s.line)}" placeholder="เช่น เหนือ / ใต้ / อีสานเหนือ">
+        <datalist id="lineList">${lines.map(l=>`<option value="${esc(l)}">`).join('')}</datalist></div>
+      <div class="fg"><label>ระยะทางสะสมจากศูนย์กลาง (กม.) *</label><input type="number" id="s_km" value="${s.km}"></div>
+    </div>
+    <button class="btn btn-g" style="width:100%" onclick="saveStn('${id||''}')">💾 บันทึก</button>`);
+}
+function saveStn(id){
+  const v=i=>document.getElementById(i).value;
+  const o={id:id||uid('s'),name:v('s_name').trim(),line:v('s_line').trim()||'อื่นๆ',km:+v('s_km')||0};
+  if(!o.name){alert('กรุณากรอกชื่อสถานี');return;}
+  const i=DB.stations.findIndex(s=>s.id===id);
+  i>=0?DB.stations[i]=o:DB.stations.push(o);
+  save();closeModal();toast('บันทึกสถานีแล้ว');render();
+}
+
+/* ---- Pricing ---- */
+function tabPrice(){
+  const P=DB.pricing;
+  const row=(k,l,u,hint)=>`<div class="fg"><label>${l} <span style="color:var(--gold)">(${u})</span></label>
+    <input type="number" step="any" id="p_${k}" value="${P[k]}">
+    ${hint?`<small style="color:var(--mut);font-size:12.5px">${hint}</small>`:''}</div>`;
+  return `<div class="grid2" style="align-items:start">
+    <div class="panel">
+      <h3 style="font-size:17px;margin-bottom:16px">💰 อัตราค่าบริการกลาง</h3>
+      ${row('locoPerKm','ค่าเช่าหัวรถจักร','บาท/กม.','ใช้เมื่อเลือกรูปแบบ “เหมาขบวนจัดเฉพาะ”')}
+      ${row('shunting','ค่าสับเปลี่ยน/พ่วงตู้','บาท/เที่ยว','ใช้เมื่อเลือก “พ่วงกับขบวนปกติ”')}
+      ${row('overnight','ค่าจอดพ่วงค้างคืน','บาท/คืน')}
+      ${row('cleaning','ค่าทำความสะอาดตู้','บาท/ตู้')}
+      ${row('staffPerDay','ค่าเจ้าหน้าที่ประจำตู้','บาท/วัน/ตู้')}
+      ${row('minDistance','ระยะทางขั้นต่ำที่คิดค่าบริการ','กม.','หากระยะทางจริงต่ำกว่านี้ ระบบจะคิดที่ค่านี้')}
+      ${row('holidayPct','ค่าธรรมเนียมช่วงเทศกาล','%','คิดจากยอดรวมก่อนภาษี')}
+      ${row('vat','ภาษีมูลค่าเพิ่ม','%')}
+      <button class="btn btn-g" style="width:100%" onclick="savePrice()">💾 บันทึกโครงสร้างราคา</button>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:17px;margin-bottom:16px">🚃 เรทราคารายประเภทตู้</h3>
+      <div class="scroll"><table class="tbl"><thead><tr><th>ตู้</th><th>บาท/กม.</th><th>ขั้นต่ำ</th></tr></thead><tbody>
+      ${DB.carriages.map(c=>`<tr><td>${esc(c.name)}</td>
+        <td><input type="number" style="padding:7px 9px" id="rk_${c.id}" value="${c.pricePerKm}"></td>
+        <td><input type="number" style="padding:7px 9px" id="rm_${c.id}" value="${c.minPrice}"></td></tr>`).join('')}
+      </tbody></table></div>
+      <button class="btn btn-g" style="width:100%;margin-top:14px" onclick="saveRates()">💾 บันทึกเรทรายตู้</button>
+      <div class="note" style="background:rgba(76,141,255,.08);border-color:rgba(76,141,255,.3);color:#bcd4ff">
+        เมื่อบันทึก ระบบหน้าบ้านจะใช้อัตราใหม่ทันทีในการคำนวณครั้งถัดไป</div>
+    </div></div>`;
+}
+function savePrice(){
+  ['locoPerKm','shunting','overnight','cleaning','staffPerDay','minDistance','holidayPct','vat']
+    .forEach(k=>DB.pricing[k]=+document.getElementById('p_'+k).value||0);
+  save();toast('บันทึกโครงสร้างราคาแล้ว');render();
+}
+function saveRates(){
+  DB.carriages.forEach(c=>{c.pricePerKm=+document.getElementById('rk_'+c.id).value||0;
+    c.minPrice=+document.getElementById('rm_'+c.id).value||0;});
+  save();toast('บันทึกเรทรายตู้แล้ว');render();
+}
+
+/* ---- Quotes log ---- */
+function tabQuo(){
+  if(!DB.quotes.length) return '<div class="panel" style="text-align:center;color:var(--mut)">ยังไม่มีใบประเมินที่บันทึกไว้</div>';
+  return `<div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn btn-d btn-s" onclick="if(confirm('ล้างประวัติทั้งหมด?')){DB.quotes=[];save();render();}">🗑 ล้างประวัติ</button></div>
+    <div class="scroll"><table class="tbl">
+    <thead><tr><th>วันที่</th><th>เส้นทาง</th><th>กม.</th><th>ตู้</th><th>รูปแบบ</th><th>ผู้ติดต่อ</th><th style="text-align:right">ยอดรวม</th></tr></thead>
+    <tbody>${DB.quotes.map(q=>`<tr>
+      <td><small>${new Date(q.at).toLocaleString('th-TH')}</small></td>
+      <td>${esc(q.from)} → ${esc(q.to)}</td><td>${num(q.km)}</td>
+      <td>${esc(q.car)} ×${q.qty}</td>
+      <td><span class="chip">${q.mode==='charter'?'เหมาขบวน':'พ่วงขบวน'}</span></td>
+      <td><small style="color:var(--mut)">${esc(q.cname||'-')}${q.corg?'<br>'+esc(q.corg):''}</small></td>
+      <td style="text-align:right;color:var(--gold);font-weight:600">฿${num(Math.round(q.total))}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+/* ---- Admin accounts ---- */
+function tabUsr(){
+  return `<div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn btn-g btn-s" onclick="editUsr()">➕ เพิ่มบัญชีผู้ดูแล</button></div>
+    <div class="scroll"><table class="tbl">
+    <thead><tr><th>ชื่อ-สกุล</th><th>ชื่อผู้ใช้</th><th>สิทธิ์</th><th style="text-align:right">จัดการ</th></tr></thead>
+    <tbody>${DB.admins.map(a=>`<tr><td><b>${esc(a.name)}</b></td><td>${esc(a.user)}</td>
+      <td><span class="chip" style="color:var(--gold2)">${esc(a.role)}</span></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn btn-o btn-s" onclick="editUsr('${a.id}')">แก้ไข</button>
+        ${DB.admins.length>1?`<button class="btn btn-d btn-s" onclick="delUsr('${a.id}')">ลบ</button>`:''}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function delUsr(id){
+  if(id===ADMIN.id){alert('ไม่สามารถลบบัญชีที่กำลังใช้งานอยู่');return;}
+  if(confirm('ยืนยันลบบัญชีนี้?')){DB.admins=DB.admins.filter(a=>a.id!==id);save();toast('ลบแล้ว');render();}
+}
+function editUsr(id){
+  const a=DB.admins.find(x=>x.id===id)||{id:'',user:'',pass:'',name:'',role:'Staff'};
+  openModal(id?'แก้ไขบัญชีผู้ดูแล':'เพิ่มบัญชีผู้ดูแล',`
+    <div class="frow"><div class="fg"><label>ชื่อ-สกุล *</label><input id="u_name" value="${esc(a.name)}"></div>
+    <div class="fg"><label>สิทธิ์การใช้งาน</label><select id="u_role">
+      ${['Super Admin','Admin','Staff'].map(r=>`<option ${a.role===r?'selected':''}>${r}</option>`).join('')}</select></div></div>
+    <div class="frow"><div class="fg"><label>ชื่อผู้ใช้ *</label><input id="u_user" value="${esc(a.user)}"></div>
+    <div class="fg"><label>รหัสผ่าน *</label><input id="u_pass" value="${esc(a.pass)}"></div></div>
+    <button class="btn btn-g" style="width:100%" onclick="saveUsr('${id||''}')">💾 บันทึก</button>`);
+}
+function saveUsr(id){
+  const v=i=>document.getElementById(i).value.trim();
+  const o={id:id||uid('a'),name:v('u_name'),user:v('u_user'),pass:v('u_pass'),role:v('u_role')};
+  if(!o.name||!o.user||!o.pass){alert('กรุณากรอกข้อมูลให้ครบ');return;}
+  if(DB.admins.some(x=>x.user===o.user&&x.id!==id)){alert('ชื่อผู้ใช้นี้ถูกใช้แล้ว');return;}
+  const i=DB.admins.findIndex(x=>x.id===id);
+  i>=0?DB.admins[i]=o:DB.admins.push(o);
+  save();closeModal();toast('บันทึกบัญชีแล้ว');render();
+}
+
+/* ---- Modal ---- */
+function openModal(title,body){
+  const m=document.createElement('div');m.className='modal';m.id='modal';
+  m.innerHTML=`<div class="modal-in"><div class="mh"><h3>${title}</h3><button class="x" onclick="closeModal()">×</button></div>${body}</div>`;
+  m.onclick=e=>{if(e.target===m)closeModal()};
+  document.body.appendChild(m);
+}
+function closeModal(){document.getElementById('modal')?.remove()}
+</script>
+</body>
+</html>
