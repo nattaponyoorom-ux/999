@@ -1,0 +1,16 @@
+/* สไตล์เฉพาะหน้าเจ้าหน้าที่ */
+header.staff{background:#0B2A5B;border-bottom:3px solid var(--accent)}
+header.staff .logo,header.staff .logo span{color:#fff} header.staff .logo span{color:#FFD166}
+header.staff a.lk{color:#C9D8F2} header.staff a.lk:hover{background:rgba(255,255,255,.12);color:#fff}
+.mono,code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+code{background:rgba(11,94,215,.1);padding:1px 5px;border-radius:5px}
+td.mono{color:var(--brand-dark)}
+.ctn{width:70px;height:48px;border-radius:8px;overflow:hidden;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-size:22px}
+.ctn img{width:100%;height:100%;object-fit:cover}
+.igrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ithumb{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel2)}
+.ithumb img{width:100%;height:90px;object-fit:cover}
+.ithumb .cov{position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.ithumb .ia{display:flex;gap:4px;padding:5px;flex-wrap:wrap}.ithumb .ia .btn{padding:4px 8px;font-size:12px;flex:1}
+.feerow{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+@media(max-width:900px){.igrid{grid-template-columns:repeat(2,1fr)}}

@@ -1,0 +1,24 @@
+/* ===== ธีมสี — แก้สีทั้งเว็บได้ที่ไฟล์นี้ไฟล์เดียว =====
+   ฟ้ารถไฟ = ความน่าเชื่อถือ / ส้ม = ปุ่มจอง-คำนวณ (สีเด่นกระตุ้นการตัดสินใจ) */
+:root{
+  --bg:#F4F8FD; --panel:#FFFFFF; --panel2:#EEF4FB; --line:#D9E4F2;
+  --txt:#12233D; --mut:#5B6B85;
+  --brand:#0B5ED7; --brand-dark:#0B3C8C;
+  --accent:#C2410C; --accent2:#9A3412;
+  --grn:#059669; --red:#DC2626; --blue:#0B5ED7; --r:16px;
+}
+.logo{color:var(--brand-dark)} .logo span{color:var(--accent)}
+.nav a.lk:hover,.nav a.lk.on{color:var(--brand-dark);background:#E3EEFF}
+.btn-g{background:linear-gradient(135deg,#E8590C,#C2410C);color:#fff;border:1px solid #C2410C;box-shadow:0 8px 20px rgba(194,65,12,.28)}
+.btn-g:hover{filter:brightness(1.08)}
+.hero{background:linear-gradient(135deg,#0B3C8C 0%,#0B5ED7 55%,#2E9BEA 100%);border-bottom:none}
+.hero h1{color:#fff} .hero h1 em{color:#FFD166} .hero p{color:rgba(255,255,255,.88)}
+.hero .tagpill{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff}
+.hero .btn-o{color:#fff;border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.12)}
+.hero .btn-o:hover{background:rgba(255,255,255,.22);border-color:#fff}
+.train-art{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);box-shadow:0 24px 50px rgba(5,30,80,.35)}
+.train-art span{color:#fff!important} .train-art .win i{background:linear-gradient(180deg,#BFE0FF,#7FB8F5);border-color:#fff}
+.rail{background:repeating-linear-gradient(90deg,rgba(255,255,255,.7) 0 16px,transparent 16px 26px)}
+.tab.on{background:linear-gradient(135deg,#0B5ED7,#0B3C8C);color:#fff}
+.price b{color:var(--accent)}
+footer{background:#0B2A5B;color:#C9D8F2;border-top:none}
