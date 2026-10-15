@@ -14,3 +14,5 @@ td.mono{color:var(--brand-dark)}
 .ithumb .ia{display:flex;gap:4px;padding:5px;flex-wrap:wrap}.ithumb .ia .btn{padding:4px 8px;font-size:12px;flex:1}
 .feerow{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--panel2)}
 @media(max-width:900px){.igrid{grid-template-columns:repeat(2,1fr)}}
+.feerow .ck{white-space:nowrap;flex-shrink:0}
+.tbl input{min-width:0}

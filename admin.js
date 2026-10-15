@@ -204,12 +204,12 @@ function tabPrice(){
     <div class="fg"><label>ระยะทางขั้นต่ำที่คิดค่าบริการ (กม.)</label><input type="number" id="p_minDistance" value="${P.minDistance}"></div>
     <div class="fg"><label>สูตรค่าเช่าตู้</label><input class="mono" id="p_rent" value="${esc(P.rent)}"></div>
   </div>
-  <div class="grid2" style="align-items:start">
+  <div style="display:grid;grid-template-columns:1fr;gap:18px;align-items:start">
     <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="font-size:17px">🔣 ตัวแปรคงที่ (อัตราค่าบริการ)</h3>
       <button class="btn btn-o btn-s" onclick="priceAct('addC')">➕ เพิ่ม</button></div>
       <div class="scroll"><table class="tbl"><thead><tr><th>ชื่อตัวแปร</th><th>คำอธิบาย</th><th>ค่า</th><th>หน่วย</th><th>โชว์</th><th></th></tr></thead><tbody>
-      ${cs.map((x,i)=>`<tr><td><input class="mono" ${i2} id="ck_${i}" value="${esc(x.k)}" style="width:105px"></td><td><input ${i2} id="cl_${i}" value="${esc(x.label)}"></td>
-        <td><input type="number" step="any" ${i2} id="cv_${i}" value="${x.v}" style="width:90px"></td><td><input ${i2} id="cu_${i}" value="${esc(x.unit)}" style="width:80px"></td>
+      ${cs.map((x,i)=>`<tr><td><input class="mono" ${i2} id="ck_${i}" value="${esc(x.k)}" style="width:150px"></td><td><input ${i2} id="cl_${i}" value="${esc(x.label)}"></td>
+        <td><input type="number" step="any" ${i2} id="cv_${i}" value="${x.v}" style="width:120px"></td><td><input ${i2} id="cu_${i}" value="${esc(x.unit)}" style="width:130px"></td>
         <td><input type="checkbox" id="cs_${i}" ${x.show!==false?'checked':''}></td><td><button class="btn btn-d btn-s" onclick="priceAct('delC',${i})">✕</button></td></tr>`).join('')||'<tr><td colspan="6" style="color:var(--mut)">ยังไม่มีตัวแปร</td></tr>'}
       </tbody></table></div></div>
     <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 style="font-size:17px">➕ รายการค่าบริการเพิ่มเติม</h3>
